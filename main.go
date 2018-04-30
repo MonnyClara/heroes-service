@@ -27,21 +27,51 @@ func main() {
 		UserName: "User1",
 	}
 
-	// Initialization of the Fabric SDK from the previously set properties
-	err := fSetup.Initialize()
-	if err != nil {
-		fmt.Printf("Unable to initialize the Fabric SDK: %v\n", err)
-	}
+        // Initialization of the Fabric SDK from the previously set properties
+        err := fSetup.Initialize()
+        if err != nil {
+                fmt.Printf("Unable to initialize the Fabric SDK: %v\n", err)
+        }
 
-	// Install and instantiate the chaincode
-	err = fSetup.InstallAndInstantiateCC()
-	if err != nil {
-		fmt.Printf("Unable to install and instantiate the chaincode: %v\n", err)
-	}
 
-	// Launch the web application listening
-	app := &controllers.Application{
-		Fabric: &fSetup,
-	}
-	web.Serve(app)
+        // Install and instantiate the chaincode
+        err = fSetup.InstallAndInstantiateCC()
+        if err != nil {
+                fmt.Printf("Unable to install and instantiate the chaincode: %v\n", err)
+        }
+
+        response, err := fSetup.QueryState("LV1")
+        if err != nil {
+                fmt.Printf("Unable to query hello on the chaincode: %v\n", err)
+        } else {
+                fmt.Printf("Response from the query hello: %s\n", response)
+        }
+
+
+        // Invoke the chaincode
+        txId, err2 := fSetup.InvokeHello("chainHero")
+        if err2 != nil {
+                fmt.Printf("Unable to invoke hello on the chaincode: %v\n", err2)
+        } else {
+                fmt.Printf("Successfully invoke hello, transaction ID: %s\n", txId)
+        }
+
+
+        response, err = fSetup.QueryState("LV1")
+        if err != nil {
+                fmt.Printf("Unable to query hello on the chaincode: %v\n", err)
+        } else {
+                fmt.Printf("Response from the query hello: %s\n", response)
+        }
+
+
+
+        // Launch the web application listening
+        app := &controllers.Application{
+                Fabric: &fSetup,
+        }
+        web.Serve(app)
+
+
+
 }
